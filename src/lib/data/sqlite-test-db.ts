@@ -52,15 +52,18 @@ class SqliteTestClient implements DbClient {
       if (value !== null && typeof value === "object") return JSON.stringify(value);
       return value;
     });
+    const bindings = Object.fromEntries(
+      normalizedParams.map((value, index) => [String(index + 1), value]),
+    );
 
     const startedAt = performance.now();
     try {
       const statement = this.database.prepare(sqliteSql);
       if (returnsRows) {
-        const rows = statement.all(...normalizedParams) as T[];
+        const rows = statement.all(bindings) as T[];
         return { rows, rowCount: rows.length };
       }
-      const result = statement.run(...normalizedParams);
+      const result = statement.run(bindings);
       return { rows: [] as T[], rowCount: result.changes };
     } catch (error) {
       const detail = error as { code?: string; name?: string };
