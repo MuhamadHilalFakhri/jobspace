@@ -1,0 +1,235 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+
+@custom-variant dark (&:is(.dark *));
+
+/* JobSpace — Notion-inspired design tokens (see PRD/DESIGN references). */
+@theme {
+  --color-blue: #3478f6;
+  --color-marigold: #ffb110;
+  --color-coral: #f64932;
+  --color-sky: #62aef0;
+  --color-midnight: #02093a;
+  --color-mocha: #b18164;
+
+  --font-sans: Inter, "NotionInter", ui-sans-serif, system-ui, -apple-system,
+    "Segoe UI", Roboto, sans-serif;
+  --font-serif: "Source Serif Pro", "Lyon Text", Georgia, serif;
+
+  --radius-card: 12px;
+  --radius-btn: 8px;
+  --radius-pill: 9999px;
+}
+
+@layer base {
+  :root {
+    --bg-app: #141413;
+    --bg-sidebar: #10100f;
+    --bg-hover: rgba(255, 255, 255, 0.055);
+    --bg-active: rgba(255, 255, 255, 0.095);
+    --text-primary: #f0efed;
+    --text-secondary: #b4b1ad;
+    --text-faint: #85817c;
+    --border-subtle: rgba(255, 255, 255, 0.095);
+    --border-strong: rgba(255, 255, 255, 0.16);
+    color-scheme: dark;
+  }
+
+  html,
+  body {
+    height: 100%;
+  }
+
+  body {
+    background-color: var(--bg-app);
+    color: var(--text-primary);
+    font-family: var(--font-sans);
+    font-feature-settings: "lnum", "locl" 0;
+    -webkit-font-smoothing: antialiased;
+    @apply bg-background text-foreground;
+  }
+
+  /* Visible focus states are required for keyboard accessibility. */
+  :focus-visible {
+    outline: 2px solid var(--color-blue);
+    outline-offset: 2px;
+    border-radius: 3px;
+  }
+
+  ::selection {
+    background: rgba(0, 117, 222, 0.18);
+  }
+  * {
+    @apply border-border outline-ring/50;
+  }
+  html {
+    @apply font-sans;
+  }
+}
+
+@layer utilities {
+  .area-app {
+    background-color: var(--bg-app);
+    color: var(--text-primary);
+  }
+  .area-sidebar {
+    background-color: var(--bg-sidebar);
+  }
+  .hover-row {
+    transition: background-color 160ms ease;
+  }
+  .hover-row:hover {
+    background-color: var(--bg-hover);
+  }
+  .interactive-table-row {
+    transition: background-color 160ms ease;
+  }
+  .interactive-table-row:hover,
+  .interactive-table-row:focus-within {
+    background-color: rgba(255, 255, 255, 0.035);
+  }
+  .border-subtle {
+    border-color: var(--border-subtle);
+  }
+  .text-primary {
+    color: var(--text-primary);
+  }
+  .text-secondary {
+    color: var(--text-secondary);
+  }
+  .text-faint {
+    color: var(--text-faint);
+  }
+  .page-title {
+    letter-spacing: -0.02em;
+  }
+  .scroll-thin::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+  .scroll-thin::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.14);
+    border-radius: 9999px;
+  }
+  .animate-in-fast {
+    animation: fadeSlide 200ms ease;
+  }
+  @keyframes fadeSlide {
+    from {
+      opacity: 0;
+      transform: translateY(4px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  .skeleton {
+    background: linear-gradient(
+      90deg,
+      var(--bg-hover) 25%,
+      var(--bg-active) 37%,
+      var(--bg-hover) 63%
+    );
+    background-size: 400% 100%;
+    animation: shimmer 1.4s ease infinite;
+  }
+  @keyframes shimmer {
+    0% {
+      background-position: 100% 50%;
+    }
+    100% {
+      background-position: 0 50%;
+    }
+  }
+}
+
+@theme inline {
+  --font-heading: Inter, "NotionInter", ui-sans-serif, system-ui, -apple-system,
+    "Segoe UI", Roboto, sans-serif;
+  --font-sans: Inter, "NotionInter", ui-sans-serif, system-ui, -apple-system,
+    "Segoe UI", Roboto, sans-serif;
+  --color-sidebar-ring: var(--sidebar-ring);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar: var(--sidebar);
+  --color-chart-5: var(--chart-5);
+  --color-chart-4: var(--chart-4);
+  --color-chart-3: var(--chart-3);
+  --color-chart-2: var(--chart-2);
+  --color-chart-1: var(--chart-1);
+  --color-ring: var(--ring);
+  --color-input: var(--input);
+  --color-border: var(--border);
+  --color-destructive: var(--destructive);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent: var(--accent);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-muted: var(--muted);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-secondary: var(--secondary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary: var(--primary);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-popover: var(--popover);
+  --color-card-foreground: var(--card-foreground);
+  --color-card: var(--card);
+  --color-foreground: var(--foreground);
+  --color-background: var(--background);
+  --radius-sm: calc(var(--radius) * 0.6);
+  --radius-md: calc(var(--radius) * 0.8);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) * 1.4);
+  --radius-2xl: calc(var(--radius) * 1.8);
+  --radius-3xl: calc(var(--radius) * 2.2);
+  --radius-4xl: calc(var(--radius) * 2.6);
+}
+
+:root {
+  --background: #141413;
+  --foreground: #f0efed;
+  --card: #1a1a19;
+  --card-foreground: #f0efed;
+  --popover: #20201f;
+  --popover-foreground: #f0efed;
+  --primary: #3478f6;
+  --primary-foreground: #ffffff;
+  --secondary: #252524;
+  --secondary-foreground: #e7e5e2;
+  --muted: #232322;
+  --muted-foreground: #a09c97;
+  --accent: #2a2a29;
+  --accent-foreground: #f0efed;
+  --destructive: #e46a6a;
+  --border: #343331;
+  --input: #393836;
+  --ring: #72a8ff;
+  --chart-1: #5790ff;
+  --chart-2: #5bbd9a;
+  --chart-3: #e1a957;
+  --chart-4: #a98ad5;
+  --chart-5: #d97777;
+  --radius: 0.625rem;
+  --sidebar: #10100f;
+  --sidebar-foreground: #dedbd7;
+  --sidebar-primary: #3478f6;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #232322;
+  --sidebar-accent-foreground: #f0efed;
+  --sidebar-border: #2e2d2b;
+  --sidebar-ring: #72a8ff;
+}
+
+html {
+  color-scheme: dark;
+}
+
+button:enabled,
+a[href] {
+  cursor: pointer;
+}
