@@ -2,6 +2,8 @@
 
 Workspace pribadi untuk mengelola proses pencarian kerja: lamaran, peluang, perusahaan, wawancara, tugas, follow-up, dokumen, dan analitik.
 
+Aplikasi: [JobSpace](https://jobspace.muhamadhilal04.workers.dev) · [Halaman login](https://jobspace.muhamadhilal04.workers.dev/login).
+
 ## Teknologi
 
 - Next.js App Router dan React dengan TypeScript
