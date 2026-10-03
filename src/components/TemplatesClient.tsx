@@ -2,7 +2,7 @@
 
 import { toast } from "sonner";
 
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useRef, useState } from "react";
 import {
   FileCode2,
   Mail,
@@ -23,6 +23,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 
 type Template = {
   id: string;
@@ -43,6 +44,9 @@ export function TemplatesClient({ initialItems }: { initialItems: Template[] }) 
   const [saving, setSaving] = useState(false);
   const [showForm, setShowForm] = useState(false);
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
+  const [selectedId, setSelectedId] = useState<string | null>(null);
+  const previewTriggerRef = useRef<HTMLButtonElement | null>(null);
+  const selectedTemplate = items.find((item) => item.id === selectedId) ?? null;
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -146,7 +150,7 @@ export function TemplatesClient({ initialItems }: { initialItems: Template[] }) 
               <h1 className="text-2xl font-bold page-title text-primary">Templates</h1>
             </div>
             <p className="text-xs text-faint mt-1">
-              Template email follow-up & surat lamaran yang dapat dipakai ulang (FR-09).
+              Template email follow-up dan surat lamaran. Klik template untuk membaca isi lengkapnya.
             </p>
           </div>
           <div className="flex items-center gap-2">
@@ -255,23 +259,37 @@ export function TemplatesClient({ initialItems }: { initialItems: Template[] }) 
             {items.map((t) => (
               <div
                 key={t.id}
-                className="border border-subtle rounded-xl p-4 hover:border-white/20 transition-colors group bg-card"
+                className="border border-subtle rounded-xl p-4 hover:border-blue-500/30 transition-colors group bg-card"
               >
-                <div className="flex items-start justify-between">
-                  <div className="flex items-center gap-2">
-                    {t.type === "email" ? (
-                      <Mail className="w-4 h-4 text-blue-600" />
-                    ) : (
-                      <FileText className="w-4 h-4 text-violet-600" />
-                    )}
-                    <div>
-                      <div className="text-xs font-semibold text-primary">{t.name}</div>
-                      <div className="text-[10px] text-faint">
-                        {t.type === "email" ? "Email" : "Surat Lamaran"} ·{" "}
-                        {formatDateID(t.created_at.slice(0, 10))}
-                      </div>
-                    </div>
-                  </div>
+                <div className="flex items-start justify-between gap-3">
+                  <button
+                    type="button"
+                    aria-haspopup="dialog"
+                    aria-label={`Buka detail template ${t.name}`}
+                    onClick={(event) => {
+                      previewTriggerRef.current = event.currentTarget;
+                      setSelectedId(t.id);
+                    }}
+                    className="min-w-0 flex-1 rounded-md text-left outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 focus-visible:ring-offset-card"
+                  >
+                    <span className="flex items-center gap-2">
+                      {t.type === "email" ? (
+                        <Mail className="h-4 w-4 shrink-0 text-blue-400" />
+                      ) : (
+                        <FileText className="h-4 w-4 shrink-0 text-violet-400" />
+                      )}
+                      <span className="min-w-0">
+                        <span className="block break-words text-xs font-semibold text-primary">{t.name}</span>
+                        <span className="block text-[10px] text-faint">
+                          {t.type === "email" ? "Email" : "Surat Lamaran"} ·{" "}
+                          {formatDateID(t.created_at.slice(0, 10))}
+                        </span>
+                      </span>
+                    </span>
+                    <span className="mt-2 block line-clamp-3 whitespace-pre-wrap break-words text-xs leading-relaxed text-secondary">
+                      {t.content}
+                    </span>
+                  </button>
                   <div className="flex items-center gap-1 opacity-100 md:opacity-0 md:group-hover:opacity-100 md:group-focus-within:opacity-100 transition-opacity">
                     <button
                       onClick={() => openEdit(t)}
@@ -289,10 +307,6 @@ export function TemplatesClient({ initialItems }: { initialItems: Template[] }) 
                     </button>
                   </div>
                 </div>
-
-                <p className="text-xs text-secondary mt-2 line-clamp-3 whitespace-pre-wrap font-mono text-[11px]">
-                  {t.content}
-                </p>
 
                 <div className="flex items-center gap-1.5 mt-3 pt-3 border-t border-subtle">
                   <button
@@ -313,6 +327,38 @@ export function TemplatesClient({ initialItems }: { initialItems: Template[] }) 
           </div>
         )}
       </div>
+      <Dialog open={Boolean(selectedTemplate)} onOpenChange={(open) => { if (!open) setSelectedId(null); }}>
+        <DialogContent
+          className="flex max-h-[85dvh] flex-col overflow-hidden sm:max-w-2xl"
+          onCloseAutoFocus={(event) => {
+            event.preventDefault();
+            previewTriggerRef.current?.focus();
+          }}
+        >
+          {selectedTemplate && (
+            <>
+              <DialogHeader className="shrink-0 pr-8">
+                <DialogTitle className="break-words leading-snug">{selectedTemplate.name}</DialogTitle>
+                <DialogDescription>
+                  {selectedTemplate.type === "email" ? "Email" : "Surat Lamaran"} · Dibuat {formatDateID(selectedTemplate.created_at)}
+                </DialogDescription>
+              </DialogHeader>
+              <div className="min-h-0 overflow-y-auto rounded-lg border border-subtle bg-background p-4 text-sm leading-relaxed whitespace-pre-wrap break-words text-primary select-text">
+                {selectedTemplate.content}
+              </div>
+              <DialogFooter className="shrink-0">
+                <Button type="button" variant="outline" onClick={() => void handleCopy(selectedTemplate)}>
+                  <Copy className="h-4 w-4" /> Salin isi
+                </Button>
+                <Button type="button" variant="outline" onClick={() => handleDownload(selectedTemplate)}>
+                  <Download className="h-4 w-4" /> Unduh
+                </Button>
+                <Button type="button" onClick={() => setSelectedId(null)}>Tutup</Button>
+              </DialogFooter>
+            </>
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
